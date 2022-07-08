@@ -15,28 +15,30 @@ C:\Users\Billy\>
 The user will then type a *command* followed by *arguments*. For example:
 
 ```powershell
-C:\Users\Billy\> echo hello world
+> echo hello world
 ```
 
 will execute the command `echo` which simply prints the given arguments (white-space separated) `hello` and `world`.
 
 ```powershell
-C:\Users\Billy\> echo hello world_
+> echo hello world
 hello
 world
 ```
+
 ## Variables
 Variables in PowerShell have the `$` prefix, for example
 ```PowerShell
-PS C:\> $Day = "Tuesday"
-PS C:\> $Day
+> $Day = "Tuesday"
+> $Day
 Tuesday
 ```
 
 Variables are available in the scope they're created. E.g. a variable created in a function will only be accessible in that function. You can use a scope modifier `$Scope:<variable-name>` to change this. Some scope modifiers are as follows:
 
-- `global:`
-- `local:`
+- `global:` The default scope in effect when PowerShell session starts. Variables, aliases and functions in PS profiles are also created in global scope.
+- `local:` The current scope. This can be the global scope, or any other scope
+- `script:` Scope that is created when a script file runs.
 - `<variable-namespace>` - A special modifier such as from the list below:
 
 | Namespace  | Description |
@@ -48,7 +50,7 @@ Variables are available in the scope they're created. E.g. a variable created in
 
 You can view all variables in a scope by using `Get-ChildItem`. The following example lists all environment variables:
 ```PowerShell
-gci env:
+> gci env:
 ```
 
 
@@ -59,7 +61,7 @@ In PowerShell, environment variables are stored as a string and cannot be empty.
 
 Use the variable syntax (`$`) to specify an environment variable
 ```PowerShell
-$Env:<variable-name>
+> $Env:<variable-name>
 ```
 
 `PATH` is a special environment variable, in that it contains the locations of all the possible scripts and functions you may want to execute directly from the command line.
@@ -67,3 +69,10 @@ $Env:<variable-name>
 ## Tips and Tidbits
 ### Escaping Characters
 You can escape characters such as spaces by wrapping the argument in a quote: `echo "Hello World"` or by using the shell-specific escape character (`` ` `` for powershell, `\` for bash)
+
+### Input/Output:
+Use `>` and `<` to work with input output streams. E.g
+```PowerShell
+> echo "hello world" > hello.txt
+```
+will take the output of the echo and insert it into a file called `hello.txt`
