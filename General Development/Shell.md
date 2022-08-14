@@ -1,5 +1,7 @@
 # Shell
 
+[[General Development]]
+
 ## Introduction
 A shell is a program which allows the user to interact with the OS, oftening using a command line interface. A program which may display a shell is a terminal. A majority of Windows operating systems use PowerShell as the command shell, whilst a majority of linux OS use Bash.
 

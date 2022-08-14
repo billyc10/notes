@@ -1,5 +1,7 @@
 # Javascript
 
+[[Front End]]
+
 ## Variables
 ### Scoping
 `let` is block scoped, `var` is function scoped

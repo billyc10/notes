@@ -1,5 +1,7 @@
 # Git
 
+[[General Development]]
+
 ## Concepts
 ### Snapshots
 Git stores data as snapshots of files and folders within a directory (git repository). Files and folders are called blobs and trees respectively
