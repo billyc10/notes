@@ -15,6 +15,8 @@ function scoping() {
 }
 ```
 
+
+```
 # Functions
 ## Arguments Object
 The arugments object is a lcoal variable within a function that contains the values of the arguments passed to that function
@@ -148,4 +150,33 @@ displayBilly(); // "Billy is twenty and lives in Melbourne"
 
 ## `...` Operator
 ### Spread Syntax
-`...` allows you to expand an iterable in a place where individual arguments are expected
+The spread allows you to expand an iterable in a place where individual items are expected. 
+
+Spread in a function:
+```js
+function addThree(x, y, z) {
+    return x + y + z;
+}
+
+const myArray = [1, 2, 3];
+
+addthree(...myArray) // 6;
+```
+
+Spread in arrays:
+```js
+a = [3, 4];
+b = [5, 6];
+
+c = [...a]; // one-level deep copy of array
+d = [1, 2, ...a, ...b]; // [1, 2, 3, 4, 5, 6]
+```
+
+Spread in objects:
+```js
+originalObj = { key1: "value1", key2: "value2" };
+shallowClone = { ...originalObj }; // { key1: "value1", key2: "value2" };
+newObject = { ...originalObj, key1: "valueNew" }; // { key1: "valueNew", key2: "value2" };
+```
+
+# Promises

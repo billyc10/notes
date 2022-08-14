@@ -1,0 +1,143 @@
+{
+  "main": {
+    "id": "9c7c76c7590bbad2",
+    "type": "split",
+    "children": [
+      {
+        "id": "78c9d1b198033981",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "General Development/The Shell.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "97ef85418668fde1",
+    "type": "split",
+    "children": [
+      {
+        "id": "9c9a2fba235068a7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9648043c6538c83f",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "5af814d685bf0076",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "65f8c52f3a8d0173",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "69a17242cd802eab",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca4f1afae96a8356",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "050582f27ed8308b",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "General Development/The Shell.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": true,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1b46ff23108fe77d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "General Development/The Shell.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "7032b7bddb017178",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "a295b4ec128d0190",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "General Development/The Shell.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "active": "78c9d1b198033981",
+  "lastOpenFiles": [
+    "README.md",
+    "cshorp.png.md",
+    "Front End/New Topic.md",
+    "Front End/Javascript.md",
+    "General Development/The Shell.md",
+    "Test.md",
+    "2022-08-14.md",
+    "General Development/Git.md",
+    "cshorp.png"
+  ]
+}
