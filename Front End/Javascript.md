@@ -1,9 +1,39 @@
 # Javascript
+Notes on JavaScript development
 
-[[Front End]]
+- [Javascript](#javascript)
+- [Variables](#variables)
+  - [Scoping](#scoping)
+- [Functions](#functions)
+  - [IIFE (Immediately Invoked Function Expression)](#iife-immediately-invoked-function-expression)
+  - [Closures](#closures)
+  - [Arrow Functions](#arrow-functions)
+  - [Call, Apply, Bind](#call-apply-bind)
+    - [Call](#call)
+    - [Apply](#apply)
+    - [Bind](#bind)
+  - [Spread Operator](#spread-operator)
+    - [Spread Syntax](#spread-syntax)
+- [Promises](#promises)
+  - [Examples](#examples)
+    - [Pending State](#pending-state)
+    - [Fulfilled State](#fulfilled-state)
+    - [Rejected State](#rejected-state)
+  - [Chaining Promises](#chaining-promises)
+    - [Chained error handling](#chained-error-handling)
+  - [Creating Promises](#creating-promises)
+    - [Nested promise](#nested-promise)
+  - [Asynchronous Programming](#asynchronous-programming)
+    - [.allSettled()](#allsettled)
+    - [Race](#race)
+  - [Async/Await](#asyncawait)
+    - [Error Handling](#error-handling)
+    - [Awaiting concurrent requests](#awaiting-concurrent-requests)
+    - [Awaiting parallel requests](#awaiting-parallel-requests)
 
-## Variables
-### Scoping
+
+# Variables
+## Scoping
 `let` is block scoped, `var` is function scoped
 ```js
 function scoping() {
@@ -39,6 +69,7 @@ displayAll(1, 2, 5); // 1 2 5
 ```
 Same behaviour is achievable in ES6 using rest parameters
 
+# Functions
 ## IIFE (Immediately Invoked Function Expression)
 Calling a function as soon as it is declared
 ```js
@@ -150,7 +181,7 @@ const displayBilly = displayName.bind(PersonA, "twenty", "Melbourne");
 displayBilly(); // "Billy is twenty and lives in Melbourne"
 ```
 
-## `...` Operator
+## Spread Operator
 ### Spread Syntax
 The spread allows you to expand an iterable in a place where individual items are expected. 
 
@@ -182,3 +213,269 @@ newObject = { ...originalObj, key1: "valueNew" }; // { key1: "valueNew", key2: "
 ```
 
 # Promises
+*Object that represents the eventual completion (or failure) of an asynchronous operation, and its resulting value*
+
+Promises can have 3 states:
+- **Pending**: This is a promise's initial state upon creation. For an API call, while the call is happening, the promise will be pending.
+- **Fulfilled**: A promise moves from the pending to fulfilled state when the asynchronous call has been completed. A fulfilled promise will return a single value (e.g. the result of the API call)
+- **Rejected**: If the asynchronous call has failed. It returns a rejection reason.
+
+## Examples
+
+### Pending State
+If we use calling an endpoint as an example:
+```js
+const myPromise = axios.get('https://www.google.com/');
+```
+
+```js
+console.log(myPromise);
+
+> Promise {[[PromiseState]]: 'pending', [[PromiseResult]]: undefined, Symbol(async_id_symbol): 4692, Symbol(trigger_async_id_symbol): 4691}
+```
+
+### Fulfilled State
+
+To work with the promise upon the _fulfilled_ state, we use `.then()`
+```js
+axios.get('https://www.google.com/')
+    .then(({data}) => {
+        console.log(data);
+    });
+```
+and we can see the Google page being returned
+```
+<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="en-AU"> ...
+```
+
+### Rejected State
+We use `.catch()` to handle rejected promise state. Let's make our promise fail by supplying it an invalid URL:
+```js
+axios.get('INVALID_URL')
+    .then(({data}) => {
+        console.log(data);
+    });
+```
+```
+Process exited with code 1
+Uncaught AxiosError AxiosError
+    at processPromiseRejections
+    at processTicksAndRejections
+```
+
+However, if we add in a `.catch()` statement to handle the rejected promise, we can handle an error like this:
+
+```js
+const a = axios.get('INVALID_URL')
+    .then(({data}) => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+```
+```
+> AxiosError { ... } // Errror sucessfully handled and logged
+```
+## Chaining Promises
+Remember our original promise example?
+```js
+const myPromise = axios.get('https://www.google.com/');
+console.log(myPromise);
+```
+```
+> Promise {[[PromiseState]]: 'pending', [[PromiseResult]]: undefined, Symbol(async_id_symbol): 4692, Symbol(trigger_async_id_symbol): 4691}
+```
+
+What kind of object does this become when we have a `.then()` or `.catch()` block?
+```js
+const myPromise = axios.get('https://www.google.com/')
+    .then(({data}) => {
+        console.log(data);
+    })
+console.log(myPromise);
+```
+```
+> Promise {[[PromiseState]]: 'pending', [[PromiseResult]]: undefined, Symbol(async_id_symbol): 4692, Symbol(trigger_async_id_symbol): 4691}
+```
+We get the exact same object. A _promise returns a promise_. This allows us to chain together promises
+
+```js
+axios.get('SOME_API_URL')
+    .then(({ data }) => {
+        return axios.get(`SOME_OTHER_URL/${data.valueFromPrevCall}`);
+    })
+    .then(({ data }) => {
+        console.log(data);
+    });
+```
+This will ensure our first API call finishes first (promise fulfilled), before moving onto our second API call that is dependent on a return value from the first.
+
+### Chained error handling
+Adding a `.catch()` into a promise change will catch any errors from promises above it
+
+`.finally()` will execute at the end of the promise chain, after all `.then` and `.catch` have been performed.
+
+## Creating Promises
+We've looked at using HTTP libraries like Axios to investgiate promise behaviours, but how do we create our own promises?
+
+We mentioned that a Promise as, first and foremost, an _object_. It takes an _executor function_ as a parameter, that has a `resolve` parameter that the promise can use to call and resolve its state.
+
+```js
+let myPromise = new Promise((resolve) => resolve());
+```
+This will create a promise that is resolved straight away.
+
+```js
+let myPromise = new Promise((resolve) => {
+    setTimeout(resolve, 1500);
+})
+```
+This will create a promise that is resolved after 1.5 seconds
+
+But what exactly does _resolved_ mean? Resolving a promise means settling its state so that further resolving or rejecting will have no effect.
+
+For example consider:
+```js
+let myPromise = new Promise((resolve) => {
+    setInterval(() => {
+        console.log('Interval');
+        resolve('RESOLVED');
+    }, 1500);
+})
+
+myPromise.then((val) => console.log(val));
+```
+`setInterval` will fire off the resolved function every 1.5s, but only the first one will have any effect on the promise
+```
+> Interval
+> RESOLVED
+> Interval
+> Interval
+```
+
+We could use a `.finall()` block to clear the interval if we wanted to.
+
+### Nested promise
+```js
+new Promise((resolveOuter) => {
+  resolveOuter(
+    new Promise((resolveInner) => {
+      setTimeout(resolveInner, 1000);
+    }),
+  );
+});
+```
+Here's an example from MDN, where the main promise is already _resolved_ at the time of creation (as the `resolveOuter` function is called synchronously), however it is resolved with another promise, and therefore won't be _fulfilled_ until 1 second later when the inner promise fulfills.
+
+## Asynchronous Programming
+With promises, we don't have to wait for individual calls to finish before moving onto the next (although we do often do this). So how can we use several promises asynchronously?
+
+`Promise.all()` takes an iterable of promises as its input, and returns a single Promise that only fulfills when all of the input's promises fulfill. The `.then()` function's results is an array of results that matches the order of the _iterable_ we provided to the `.all()`, and _not_ the order the individual promises are resolved:
+
+```js
+let users = axios.get('localhost:3000/users');
+let orders = axios.get('localhost:3000/orders');
+
+Promise.all([users, orders])
+    .then(([u, o]) =>
+        processData(u, o)
+    ).catch((reasons) =>
+        console.log(reasons)
+    );
+```
+
+We must still remember to `.catch()` errors, and note that the `.all` promise will be rejected when any one promise is rejected.
+
+### .allSettled()
+`.allSettled()` is similar to `Promise.all()`, except you don't need a catch block as it will return when all promises have _settled_: Even if some are rejected. Note that `.all()` returns an array of fulfillment values, whereas `.allSettled()` returns an array of object with two keys, that will either be:
+```js
+{
+    status: "fulfilled",
+    value: {}
+}
+```
+```js
+{
+    status: "rejected",
+    reason: {}
+}
+```
+
+An example will be:
+```js
+let users = axios.get('localhost:3000/users');
+let orders = axios.get('localhost:3000/orders');
+
+Promise.allSettled([users, orders])
+    .then((results) => {
+        results.forEach((result) =>{
+            if (result.status === 'fulfilled'){
+                console.log(result.value);
+            } else {
+                console.log(result.reason);
+            };
+        });
+    });
+```
+
+### Race
+`Promise.race()` is another function, settles with the state of the _first_ promise to settle that is passed in. That is, if the first promise is fulfilled it will fulfill, otherwise it will reject.
+
+## Async/Await
+Syntactic sugar to make it easier to use promises in a synchronous format.
+
+`async` is a keyword that creates an asynchronous function that aims to avoid the need for promise chains (you simply need to write successive `await` calls). An async function returns an implicit promise: Whatever is returned is wrapped inside of a promise.
+
+`await` pauses execution of an async function while it waits for the promise to be fulfilled. It can only be used inside an async function. The resolved value of the promise is the return value of the awaited expression.
+
+**NOTE**: `await` only blocks the _current_ function. For example:
+
+```js
+const func1 = async () => {
+    await someFunc();
+    doSomethingElse();
+}
+
+func1();
+func2();
+```
+
+The `await` keyword will block `doSomethingElse()` but _not_ block `func2()`;
+
+### Error Handling
+Using async and await allows us to use try/catch blocks to catch errors! Nothing special here :)
+
+### Awaiting concurrent requests
+If we have two API requests that we await as such:
+```js
+const orderStatus = await axios.get("/orderStatsues");
+const orders = await axios.get("/orders");
+```
+The code will prevent the `/orders` endpoint from executing before `/orderStatuses` returns. However, what if `/orderStatuses` takes a while? What if we want both API calls to occur concurrently? We can simply delay the await.
+
+```js
+const orderStatus = axios.get("/orderStatuses");
+const orders = axios.get("/orders");
+
+const {data: statuses} = await orderStatuses;
+const {data: order} = await orders;
+```
+
+As promises are _eager_, they will be fired as soon as we run `axios.get`. As we `await` later, the two promises are already concurrently making their requests. By the time `await orderStatuses` is done, `orders` API has also already fulfilled its promise, so we waste no time.
+
+### Awaiting parallel requests
+We can use `Promise.all()` in conjunction with async/await syntax to handle promises in the order that they return (rather than the order we await them in). We simply need to put our async functions in as arguments to `Promise.all()`.
+
+```js
+await Promise.all([
+    (async () => 
+        const {data} = await axios.get("/orderStatuses");
+        console.log(data);
+    )(),
+    (async () => 
+        const {data} = await axios.get("/orders");
+        console.log(data);
+    )(),
+]);
+```
