@@ -30,6 +30,16 @@ Notes on JavaScript development
     - [Error Handling](#error-handling)
     - [Awaiting concurrent requests](#awaiting-concurrent-requests)
     - [Awaiting parallel requests](#awaiting-parallel-requests)
+- [Generators and Iterators](#generators-and-iterators)
+  - [Iteratable](#iteratable)
+  - [Generator Functions](#generator-functions)
+    - [Yield](#yield)
+  - [Async flows](#async-flows)
+- [Modules](#modules)
+  - [Named export](#named-export)
+  - [Default Exports](#default-exports)
+  - [Aggregating modules](#aggregating-modules)
+  - [Enabling Modules](#enabling-modules)
 
 
 # Variables
@@ -478,4 +488,191 @@ await Promise.all([
         console.log(data);
     )(),
 ]);
+```
+
+# Generators and Iterators
+We are familiar with basic loops such as:
+```js
+for (let i = 0; i < 10; i++) {
+    if (i > 2) break;
+    console.log(i);
+}
+```
+But in these basic scenarios, once we `break` from the loop we can't resume it from the same place simply.
+
+An _iterator_ lets you iterate through a collectoin's content one at at time, pausing at each item. It is an object that implements the Iterator protocol by having a `next()` method that returns a `value` property and `done` property.
+
+We can manually create an iterator as follows:
+
+```js
+function myIterator(start, finish) {
+  let index = start;
+  let count = 0;
+
+  return {
+    next() {
+      if (index < finish) {
+        return { value: ++index, done: false };
+      } else {
+        return { value: count, done: true };
+      }
+    }
+  };
+}
+
+const it = myIterator(0, 5);
+res = it;
+
+while(!res.done) {
+  console.log(res.value);
+  res = it.next();
+};
+
+```
+
+## Iteratable
+Although we can iterate through our above iterator, it is not an _iterable_. For an object to be an iterable it must implement the @@iterator method. An iterable will work with `for... in`. A basic example of an iterable is an array
+
+```js
+const arr = ["a", "b", "c", "d", "e"];
+const arrIter = arr[Symbol.iterator]();
+console.log(arrIter.next().value); // a
+console.log(arrIter.next().value); // b
+console.log(arrIter.next().value); // c
+console.log(arrIter.next().value); // d
+console.log(arrIter.next().value); // e
+```
+
+As we see from the above example, we can use the `[Symbol.iterator]` method of an iterable to retrieve an iterator to work with.
+
+## Generator Functions
+A generator function is a function that can be paused and resumed at a later time, while having the ability to pass values to and from the function at each pause point.
+
+A generator function has an `*` keyword before the name of the function, and _returns an iterable_.
+
+The `yield` keyword signals the pause point of a generator function. Consider the following example
+
+```js
+function* myGenerator() {
+  console.log('Step 1');
+  yield;
+  console.log('step 2');
+};
+
+const it = myGenerator();
+it.next(); // Step 1
+it.next(); // Step 2
+```
+
+### Yield
+`yield` can also output a value, or take in a value
+
+1. Outputting a value with yield
+
+```js
+function* incrementer() {
+  let i = 0
+
+  while (true) {
+    yield i++
+  }
+}
+
+// Initiate the generator
+const counter = incrementer()
+counter.next() // 0 
+counter.next() // 1
+```
+2. Inputting a vlue into yield
+```js
+function* generatorFunction() {
+  console.log(yield)
+  console.log(yield)
+
+  return 'The end'
+}
+
+const generator = generatorFunction()
+
+generator.next()
+generator.next(100) // 100
+generator.next(200) // 200
+```
+
+## Async flows
+We can use generators to work with async code
+
+# Modules
+ES6 has introduced modules natively in JavaScript.
+- Modules are singletons
+- Exports are static
+- Modules are file-based (one module per file);
+
+## Named export
+```js
+// myModule.js
+export function myExport() {
+    ...
+}
+function notExported() { ... }
+export const someStr = "...."
+```
+or we can
+```js
+// myModule.js
+function myExport() {
+    ...
+}
+function notExported() { ... }
+const someStr = "...."
+
+export {myExport, someStr};
+```
+
+We can also rename exports via
+```js
+export {myExport as customExport}
+```
+
+To import, you need to specify what you're importing:
+```js
+import {customExport} from './myModule.js'
+```
+
+Otherwise you can import it all in one go
+```js
+import * as myModule from './myModule.js'
+
+myModule.customExport();
+```
+
+## Default Exports
+```js
+// myModule.js
+export default function myExport() {...}
+```
+```js
+import anyName from './myModule.js'
+```
+or
+```js
+// myModule.js
+export {myExport as default, otherExports};
+```
+```js
+// consumingApp.js
+import anyName, {otherExports} from './myModule.js'
+```
+
+You can only have one default export in a module, but you can import it using any name.
+
+## Aggregating modules
+In a module, we can also export an external module (for making imports easier later on)
+```js
+export {myExport, someStr};
+export {externalExport} from './anotherFile.js'
+```
+## Enabling Modules
+```HTML
+<script src="js/app.js" type="module"></script>
 ```
