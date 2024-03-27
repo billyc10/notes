@@ -22,6 +22,28 @@ Root Nodes:
     - IP address, ingress, egress
 - Container runtime. K8s just orchestrates containers, but the running of the containers is offloaded
 
+## Contexts
+K8's `.config` file is filled with contexts that look like:
+
+```shell
+- context:
+    cluster: [cluster]
+    namespace: [namespace]
+    user: [user]
+  name: [name]
+```
+
+The `cluster` is the API URL. A cluster can be _namespaced_, which splits it further into virtual clusters each with their own permissions etc. Resources may be namespaced.
+
+Switching to a context:
+
+```shell
+kubectl config get contexts
+```
+```shell
+kubectl config use-context [context]
+```
+
 ## Containers
 ![k8s containers](image-1.png)
 
@@ -161,27 +183,8 @@ REVISION  CHANGE-CAUSE
 
 Hooray! Everything seems to be working properly
 
-## Contexts
-K8's `.config` file is filled with contexts that look like:
+In the real world you would be unlikely to manually roll back K8s deployments, but rather fix the issue at the source and run your CI/CD pipeline
 
-```shell
-- context:
-    cluster: [cluster]
-    namespace: [namespace]
-    user: [user]
-  name: [name]
-```
-
-The `cluster` is the API URL. A cluster can be _namespaced_, which splits it further into virtual clusters each with their own permissions etc. Resources may be namespaced.
-
-Switching to a context:
-
-```shell
-kubectl config get contexts
-```
-```shell
-kubectl config use-context [context]
-```
 
 ## Services
 As we know, pods are ephemeral, and get removed/spun up as needed. As such, we can never rely on a pod's IP address
@@ -242,6 +245,13 @@ spec:
 ```
 
 > Note: In terms of service vs ingress, it is usually recommended to use service-level addressing when talking between pods (e.g. BFF to API), so the traffic never leaves the Kubernetes network
+
+# Helm
+Helm helps you package K8s applications, and is created to template an application.
+
+![helm chart](image-5.png)
+A helm chart is just a collection of files/templates. It takes in your custom values along with the chart, and generates the manifest files required to post to the K8s api.
+Helm deployments are called _releases_ instead of _rollouts_.
 
 # Troubleshooting
 1. Switch to the correct K8s context
