@@ -1,4 +1,9 @@
 # Java (Spring)
+## IoC
+The main pakcages for Spring's IoC container are `org.springframework.beans` and `org.springframework.context`
+
+Beans are Java objects that are managed by Spring IoC container. The `@Autowired` annotation is used to set up automatic DI, allowing Spring to resolve and inject collaborating beans into a class.
+
 ## Controllers and Requests
 [Building a REST service](https://spring.io/guides/gs/rest-service)
 
